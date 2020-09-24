@@ -78,7 +78,7 @@ name: end-state
 Through Nomad, we are able to foster an infrastructure that enables more freedom and flexibility.  At the surface this may appear to just make the lives of the engineers better, but there is so much more.  The overall business can benefit greatly through...
 * More efficient hardware utilization through Nomad Jobs
 * Reduction in operational overhead AND accelerate time to market - no longer need to convert to containers just for the sake of container
-* Safely switch over to new or upgraded components using blue-green, within or across regions
+* Safely switch over to new or upgraded components using canary deployments, within or across regions
 
 
 ---
