@@ -156,7 +156,7 @@ name:  business-validation
 </table>
 
 ???
-Core benefits tot he business
+Core benefits to the business
 Increase Hardware utilization - not really in this demo
 Reduce Operational Overhead - same process containers or not
 Accelerate time to market - no need to containerize
@@ -172,4 +172,30 @@ Deploy secure applications - not really in this demo
 | Reduce Operational Overhead | Nomad Concepts and Architecture | Interact Using CLI and UI | Create, Run and Modify Jobs | Basic Job Specification |Monitor Jobs and Allocations| Deploy Mulit-Server Cluster|
 ]
 
+---
+class:
+name: Challenge_1_NomadArchitecture
+# Challenge 1 Nomad Architecture
 
+.center[![:scale 80%](images/Challenge_1_NomadArchitecture.png)]
+
+---
+class:
+name: Challenge_2_MultiOperationJob
+# Challenge 2 Multi-Operation Job
+
+.center[![:scale 80%](images/Challenge_2_MultiOperationJob.png)]
+
+---
+class:
+name: Challenge_3_NomadCanary
+# Challenge 3 Promote Nomad Canary
+
+.center[![:scale 80%](images/Challenge_3_NomadCanary.png)]
+
+---
+class:
+name: Challenge_4_TwoNomadClusters
+# Challenge 4 Utilizing Two Nomad Clusters
+
+.center[![:scale 80%](images/Challenge_4_TwoNomadClusters.png)]
