@@ -199,3 +199,10 @@ name: Challenge_4_TwoNomadClusters
 # Challenge 4 Utilizing Two Nomad Clusters
 
 .center[![:scale 80%](images/Challenge_4_TwoNomadClusters.png)]
+
+---
+class:
+name: Challenge_4_TwoNomadClusters
+# Challenge 4 Utilizing Two Nomad Clusters
+
+.center[![:scale 80%](images/Challenge_5_TerraformAgentMultiRegion.png)]
