@@ -26,7 +26,7 @@ job "grafana" {
         volumes = [
           "local/datasources:/etc/grafana/provisioning/datasources",
           "local/dashboards:/etc/grafana/provisioning/dashboards",
-          "/home/vagrant/nomad-autoscaler/files:/var/lib/grafana/dashboards",
+          "/root/nomad_jobs/hashicups/challenge5/files:/var/lib/grafana/dashboards",
         ]
       }
 
