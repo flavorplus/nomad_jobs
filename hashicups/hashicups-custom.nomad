@@ -1,6 +1,6 @@
 job "hashicups" {
   # Defining which data center in which to deploy the service
-  datacenters = ["dc1"]
+  datacenters = ["West"]
 
   # Define Nomad Scheduler to be used (Service/Batch/System)
   type  = "service"
