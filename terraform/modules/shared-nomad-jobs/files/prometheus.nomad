@@ -1,5 +1,5 @@
 job "prometheus" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "prometheus" {
     count = 1
@@ -16,8 +16,6 @@ job "prometheus" {
           "--web.console.libraries=/usr/share/prometheus/console_libraries",
           "--web.console.templates=/usr/share/prometheus/consoles",
         ]
-
-        network_mode = "host"
 
         volumes = [
           "local/config:/etc/prometheus/config",
@@ -36,23 +34,25 @@ global:
   evaluation_interval: 1s
 
 scrape_configs:
-  - job_name: haproxy_exporter
-    static_configs:
-      - targets: [{{ range service "haproxy-exporter" }}'{{ .Address }}:{{ .Port }}',{{ end }}]
-
-  - job_name: consul
-    metrics_path: /v1/agent/metrics
-    params:
-      format: ['prometheus']
-    static_configs:
-    - targets: ['{{ env "attr.unique.network.ip-address" }}:8500']
 
   - job_name: nomad
+    scrape_interval: 10s
     metrics_path: /v1/metrics
     params:
       format: ['prometheus']
-    static_configs:
-    - targets: ['{{ env "attr.unique.network.ip-address" }}:4646']
+    consul_sd_configs:
+    - server: '{{ env "attr.unique.network.ip-address" }}:8500'
+      services: ['nomad','nomad-client']
+    relabel_configs:
+      - source_labels: ['__meta_consul_tags']
+        regex: .*,http,.*
+        action: keep
+
+  - job_name: traefik
+    metrics_path: /metrics
+    consul_sd_configs:
+    - server: '{{ env "attr.unique.network.ip-address" }}:8500'
+      services: ['traefik-api']
 EOH
 
         change_mode   = "signal"
@@ -67,15 +67,19 @@ EOH
         network {
           mbits = 10
 
-          port "prometheus_ui" {
-            static = 9090
-          }
+          port "prometheus_ui" {}
         }
       }
 
       service {
         name = "prometheus"
         port = "prometheus_ui"
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.tcp.routers.prometheus.entrypoints=prometheus",
+          "traefik.tcp.routers.prometheus.rule=HostSNI(`*`)"
+        ]
 
         check {
           type     = "http"

@@ -1,5 +1,5 @@
 job "prometheus" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "prometheus" {
     count = 1

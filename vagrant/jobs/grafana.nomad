@@ -1,10 +1,9 @@
 job "grafana" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "grafana" {
     count = 1
 
-    # Create a host volume
     volume "grafana" {
       type   = "host"
       source = "grafana"
@@ -14,19 +13,17 @@ job "grafana" {
       driver = "docker"
 
       config {
-        # Specify docker image
-        image = "grafana/grafana:7.0.0"
+        image = "grafana/grafana"
 
-        # Map network port.
         port_map {
           grafana_ui = 3000
         }
 
-        # Mount docker volumes. First two
         volumes = [
           "local/datasources:/etc/grafana/provisioning/datasources",
           "local/dashboards:/etc/grafana/provisioning/dashboards",
-          "/root/nomad_jobs/hashicups/challenge5/files:/var/lib/grafana/dashboards",
+          # "/home/vagrant/nomad-autoscaler/files:/var/lib/grafana/dashboards",
+          "/var/lib/nomad-autoscaler/files:/var/lib/grafana/dashboards",
         ]
       }
 
@@ -101,6 +98,17 @@ EOH
           port "grafana_ui" {
             static = 3000
           }
+        }
+      }
+      service {
+        name = "grafana"
+        port = "grafana_ui"
+
+        check {
+          name     = "alive"
+          type     = "tcp"
+          interval = "10s"
+          timeout  = "2s"
         }
       }
     }

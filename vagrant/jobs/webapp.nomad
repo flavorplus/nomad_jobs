@@ -1,11 +1,11 @@
 job "webapp" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "demo" {
     count = 3
 
     scaling {
-      enabled = true
+      enabled = false
       min     = 1
       max     = 20
 
@@ -86,7 +86,7 @@ job "webapp" {
 #!/bin/sh
 
 set -ex
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 /go/bin/toxiproxy -host 0.0.0.0  &
 
 while ! wget --spider -q http://localhost:8474/version; do
@@ -94,11 +94,8 @@ while ! wget --spider -q http://localhost:8474/version; do
   sleep 0.2
 done
 
-
 /go/bin/toxiproxy-cli create webapp -l 0.0.0.0:${NOMAD_PORT_webapp} -u ${NOMAD_ADDR_webapp_http}
 /go/bin/toxiproxy-cli toxic add -n latency -t latency -a latency=1000 -a jitter=500 webapp
-#peter
-while true; do sleep 300; done
 tail -f /dev/null
         EOH
 

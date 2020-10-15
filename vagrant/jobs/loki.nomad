@@ -1,5 +1,5 @@
 job "loki" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "loki" {
     count = 1

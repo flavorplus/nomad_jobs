@@ -1,8 +1,8 @@
 job "webapp" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "demo" {
-    count = 3
+    count = 1
 
     scaling {
       enabled = true
@@ -10,16 +10,15 @@ job "webapp" {
       max     = 20
 
       policy {
+        cooldown            = "1m"
+        evaluation_interval = "30s"
 
-        cooldown = "20s"
-
-        check "avg_instance_sessions" {
+        check "avg_sessions" {
           source   = "prometheus"
-          query    = "scalar(avg((haproxy_server_current_sessions{backend=\"http_back\"}) and (haproxy_server_up{backend=\"http_back\"} == 1)))"
-
+          query    = "scalar(sum(traefik_entrypoint_open_connections{entrypoint=\"webapp\"})/scalar(nomad_nomad_job_summary_running{task_group=\"demo\"}))"
 
           strategy "target-value" {
-            target = 5
+              target = 10
           }
         }
       }
@@ -30,6 +29,10 @@ job "webapp" {
 
       config {
         image = "hashicorp/demo-webapp-lb-guide"
+
+        port_map {
+          http = "${NOMAD_PORT_http}"
+        }
       }
 
       env {
@@ -38,8 +41,8 @@ job "webapp" {
       }
 
       resources {
-        cpu    = 100
-        memory = 16
+        cpu    = 500
+        memory = 256
 
         network {
           mbits = 10
@@ -48,7 +51,7 @@ job "webapp" {
       }
 
       service {
-        name = "demo-webapp"
+        name = "webapp"
         port = "http"
 
         check {
@@ -86,7 +89,7 @@ job "webapp" {
 #!/bin/sh
 
 set -ex
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 /go/bin/toxiproxy -host 0.0.0.0  &
 
 while ! wget --spider -q http://localhost:8474/version; do
@@ -94,11 +97,8 @@ while ! wget --spider -q http://localhost:8474/version; do
   sleep 0.2
 done
 
-
 /go/bin/toxiproxy-cli create webapp -l 0.0.0.0:${NOMAD_PORT_webapp} -u ${NOMAD_ADDR_webapp_http}
 /go/bin/toxiproxy-cli toxic add -n latency -t latency -a latency=1000 -a jitter=500 webapp
-#peter
-while true; do sleep 300; done
 tail -f /dev/null
         EOH
 
@@ -121,6 +121,12 @@ tail -f /dev/null
       service {
         name = "toxiproxy-webapp"
         port = "webapp"
+
+        tags = [
+          "traefik.enable=true",
+          "traefik.http.routers.webapp.entrypoints=webapp",
+          "traefik.http.routers.webapp.rule=Path(`/`)",
+        ]
       }
 
       resources {

@@ -1,5 +1,5 @@
 job "haproxy" {
-  datacenters = ["West"]
+  datacenters = ["dc1"]
 
   group "haproxy" {
     count = 1
