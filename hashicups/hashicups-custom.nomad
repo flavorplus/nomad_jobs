@@ -107,8 +107,8 @@ EOF
       }
 
       # Task relevant environment variables necessary
-      env = {
-        "CONFIG_FILE" = "/secrets/db-creds"
+      env {
+        CONFIG_FILE = "/secrets/db-creds"
       }
 
       # Product-api Docker image location and configuration
@@ -174,7 +174,7 @@ EOF
       driver = "raw_exec"
 
       # Task relevant environment variables necessary
-      env = {
+      env {
         BIND_ADDRESS = ":8080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
       }
