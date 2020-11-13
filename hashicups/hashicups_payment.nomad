@@ -260,7 +260,7 @@ spring:
       enabled: true
       fail-fast: true
       authentication: token
-      token: s.Syd66rZVljF5TRwplgW0aE9l
+      token: REPLACETOKEN
       host: server-a-1
       port: 8200
       scheme: http
