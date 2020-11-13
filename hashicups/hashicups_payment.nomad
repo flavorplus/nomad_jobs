@@ -215,8 +215,8 @@ spring:
     vault:
       enabled: true
       fail-fast: true
-      authentication: s.Syd66rZVljF5TRwplgW0aE9l
-      token: root
+      authentication: token
+      token: s.Syd66rZVljF5TRwplgW0aE9l
       host: server-a-1
       port: 8200
       scheme: http
