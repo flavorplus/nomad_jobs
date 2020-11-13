@@ -66,6 +66,28 @@ job "hashicups" {
         }
       }
 
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
+
       # Service definition to be sent to Consul
       service {
         name = "postgres"
@@ -132,6 +154,28 @@ EOF
         }
       }
 
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
+
       # Service definition to be sent to Consul with corresponding health check
       service {
         name = "products-api-server"
@@ -168,7 +212,7 @@ EOF
         to = 8080
       }
     }
-    
+
     # Service definition to be sent to Consul with corresponding health check
     service {
       name = "payments-api-server"
@@ -241,6 +285,29 @@ EOF
         #cpu    = 500
         #memory = 1024
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
+
     } # end payments-api task
   } # end payments-api group
 
@@ -286,6 +353,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -377,6 +466,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
