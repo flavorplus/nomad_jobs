@@ -1,6 +1,19 @@
 job "hashicups" {
-  # Defining which data center in which to deploy the service
-  datacenters = ["West"]
+  # Deploy applications to multiple regions
+  multiregion {
+    strategy {
+      max_parallel = 1
+      on_failure   = "fail_all"
+    }
+    region "west" {
+      count = 3
+      datacenters = ["West"]
+    }
+    region "east" {
+      count = 1
+      datacenters = ["East"]
+    }
+  }
 
   # Define Nomad Scheduler to be used (Service/Batch/System)
   type     = "service"
@@ -206,6 +219,10 @@ EOF
       mode     = "delay"
     }
 
+    update {
+      canary  = 1
+    }
+
     network {
       port  "http_port"  {
         static = 9080
@@ -317,24 +334,26 @@ EOF
       mode     = "delay"
     }
 
+    # Define update strategy for API component
+    update {
+      canary  = 1
+    }
+
     task "public-api" {
-      driver = "docker"
+      artifact {
+        source = "https://github.com/hashicorp-demoapp/public-api/releases/download/v0.0.1/public-api"
+      }
+      driver = "raw_exec"
 
       # Task relevant environment variables necessary
       env {
         BIND_ADDRESS = ":8080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
-        PAYMENT_API_URI = "http://payments-api-server.service.consul:9080"
       }
 
-      # Public-api Docker image location and configuration
+      # Comand to run the binary
       config {
-        image = "hashicorpdemoapp/public-api:v0.0.2"
-        dns_servers = ["172.17.0.1"]
-
-        port_map {
-          pub_api = 8080
-        }
+        command = "public-api"
       }
 
       # Host machine resources required
