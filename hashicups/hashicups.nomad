@@ -35,7 +35,7 @@ job "hashicups" {
 
      # Postgres Docker image location and configuration
      config {
-        image = "hashicorpdemoapp/product-api-db:v0.0.11"
+        image = "hashicorpdemoapp/product-api-db:v0.0.12"
         dns_servers = ["172.17.0.1"]
         network_mode = "host"
         port_map {
@@ -65,6 +65,28 @@ job "hashicups" {
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul
       service {
@@ -113,7 +135,7 @@ EOF
 
       # Product-api Docker image location and configuration
       config {
-        image = "hashicorpdemoapp/product-api:v0.0.11"
+        image = "hashicorpdemoapp/product-api:v0.0.12"
         dns_servers = ["172.17.0.1"]
         port_map {
           http_port = 9090
@@ -131,6 +153,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -151,6 +195,117 @@ EOF
     } # end products-api task
   } # end products-api group
 
+
+  # Payment API component handles payments
+  group "payments-api" {
+    count = 1
+    restart {
+      attempts = 10
+      interval = "5m"
+      delay    = "25s"
+      mode     = "delay"
+    }
+
+    network {
+      port  "http_port"  {
+        static = 9080
+        to = 8080
+      }
+    }
+
+    # Service definition to be sent to Consul with corresponding health check
+    service {
+      name = "payments-api-server"
+      port = "http_port"
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.products.entrypoints=payments",
+        "traefik.http.routers.products.rule=Path(`/`)",
+      ]
+      check {
+        type     = "tcp"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+
+    task "payments-api" {
+      driver = "docker"
+
+      # Creation of the template file defining how the API will access the database
+      template {
+        destination   = "local/application.properties"
+        data = <<EOF
+app.storage=disabled
+
+app.storage=db
+app.encryption.enabled=false
+app.encryption.path=transform
+app.encryption.key=payments
+EOF
+      }
+
+      # Creation of the template file defining how to connect to vault
+      template {
+        destination   = "local/bootstrap.yml"
+        data = <<EOF
+spring:
+  cloud:
+    vault:
+      enabled: true
+      fail-fast: true
+      authentication: token
+      token: REPLACETOKEN
+      host: server-a-1
+      port: 8200
+      scheme: http
+EOF
+      }
+
+      # Task relevant environment variables necessary
+      env {
+        SPRING_CONFIG_LOCATION = "file:/local/"
+        SPRING_CLOUD_BOOTSTRAP_LOCATION = "file:/local/"
+      }
+
+      # Product-api Docker image location and configuration
+      config {
+        image = "hashicorpdemoapp/payments:v0.0.4"
+        dns_servers = ["172.17.0.1"]
+        ports = ["http_port"]
+      }
+
+      # Host machine resources required
+      resources {
+        #cpu    = 500
+        #memory = 1024
+      }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
+
+    } # end payments-api task
+  } # end payments-api group
+
   # Public API component
   group "public-api" {
     count = 1
@@ -169,11 +324,12 @@ EOF
       env {
         BIND_ADDRESS = ":8080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
+        PAYMENT_API_URI = "http://payments-api-server.service.consul:9080"
       }
 
       # Public-api Docker image location and configuration
       config {
-        image = "hashicorpdemoapp/public-api:v0.0.1"
+        image = "hashicorpdemoapp/public-api:v0.0.2"
         dns_servers = ["172.17.0.1"]
 
         port_map {
@@ -192,6 +348,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -234,7 +412,7 @@ EOF
 
       # Frontend Docker image location and configuration
       config {
-        image = "hashicorpdemoapp/frontend:v0.0.3"
+        image = "hashicorpdemoapp/frontend:v0.0.4"
         dns_servers = ["172.17.0.1"]
         volumes = [
           "local:/etc/nginx/conf.d",
@@ -284,6 +462,28 @@ EOF
         }
       }
 
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
+
       # Service definition to be sent to Consul with corresponding health check
       service {
         name = "frontend"
@@ -307,3 +507,4 @@ EOF
     }
   }
 }
+
