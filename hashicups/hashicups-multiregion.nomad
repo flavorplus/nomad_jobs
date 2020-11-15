@@ -253,7 +253,7 @@ EOF
       template {
         destination   = "local/application.properties"
         data = <<EOF
-app.storage=disabled
+#app.storage=disabled
 
 app.storage=db
 app.encryption.enabled=false
@@ -349,6 +349,7 @@ EOF
       env {
         BIND_ADDRESS = ":8080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
+        PAYMENT_API_URI = "http://payments-api-server.service.consul:9080"
       }
 
       # Comand to run the binary
