@@ -44,10 +44,10 @@ job "hashicups" {
         volume      = "pgdata"
         destination = "/var/lib/postgresql/data"
         read_only   = false
-        }
+      }
 
-     # Postgres Docker image location and configuration
-     config {
+      # Postgres Docker image location and configuration
+      config {
         image = "hashicorpdemoapp/product-api-db:v0.0.12"
         dns_servers = ["172.17.0.1"]
         network_mode = "host"
@@ -157,8 +157,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 500
+        memory = 1024
         network {
           #mbits = 10
           port  "http_port"  {
