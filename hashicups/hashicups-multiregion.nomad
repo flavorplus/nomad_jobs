@@ -297,8 +297,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 500
+        memory = 1024
       }
 
       scaling "cpu" {
@@ -359,8 +359,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 500
+        memory = 1024
 
         network {
           port "pub_api" {
