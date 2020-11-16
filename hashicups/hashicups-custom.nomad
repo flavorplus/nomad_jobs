@@ -245,7 +245,7 @@ EOF
         destination   = "local/application.properties"
         data = <<EOF
 app.storage=db
-app.encryption.enabled=false
+app.encryption.enabled=true
 app.encryption.path=transform
 app.encryption.key=payments
 EOF
