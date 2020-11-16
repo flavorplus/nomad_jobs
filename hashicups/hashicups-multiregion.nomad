@@ -219,14 +219,13 @@ EOF
       mode     = "delay"
     }
 
-    update {
-      canary  = 1
-    }
-
     network {
       port  "http_port"  {
-        static = 9080
-        to = 8080
+        static = 8080
+      //   to = 8080
+      }
+      dns {
+        servers = ["172.17.0.1"]
       }
     }
 
@@ -247,13 +246,13 @@ EOF
     }
 
     task "payments-api" {
-      driver = "docker"
+      driver = "java"
 
       # Creation of the template file defining how the API will access the database
       template {
         destination   = "local/application.properties"
         data = <<EOF
-#app.storage=disabled
+app.storage=disabled
 
 app.storage=db
 app.encryption.enabled=false
@@ -286,10 +285,14 @@ EOF
       }
 
       # Product-api Docker image location and configuration
-      config {
-        image = "hashicorpdemoapp/payments:v0.0.4"
-        dns_servers = ["172.17.0.1"]
-        ports = ["http_port"]
+
+     config {
+        jar_path    = "local/spring-boot-payments-0.0.5.jar"
+        jvm_options = ["-Xmx1024m", "-Xms256m"]
+      }
+
+      artifact {
+         source = "https://github.com/hashicorp-demoapp/payments/releases/download/v0.0.5/spring-boot-payments-0.0.5.jar"
       }
 
       # Host machine resources required
@@ -334,27 +337,24 @@ EOF
       mode     = "delay"
     }
 
-    # Define update strategy for API component
-    update {
-      canary  = 1
-    }
-
     task "public-api" {
-      artifact {
-        source = "https://github.com/hashicorp-demoapp/public-api/releases/download/v0.0.1/public-api"
-      }
-      driver = "raw_exec"
+      driver = "docker"
 
       # Task relevant environment variables necessary
       env {
-        BIND_ADDRESS = ":8080"
+        BIND_ADDRESS = ":9080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
-        PAYMENT_API_URI = "http://payments-api-server.service.consul:9080"
+        PAYMENT_API_URI = "http://payments-api-server.service.consul:8080"
       }
 
-      # Comand to run the binary
+      # Public-api Docker image location and configuration
       config {
-        command = "public-api"
+        image = "hashicorpdemoapp/public-api:v0.0.2"
+        dns_servers = ["172.17.0.1"]
+
+        port_map {
+          pub_api = 9080
+        }
       }
 
       # Host machine resources required
@@ -364,7 +364,7 @@ EOF
 
         network {
           port "pub_api" {
-            static = 8080
+            static = 9080
           }
         }
       }
@@ -454,7 +454,7 @@ server {
     # Proxy pass the api location to save CORS
     # Use location exposed by Consul connect
     location /api {
-        proxy_pass http://$upstream_endpoint:8080;
+        proxy_pass http://$upstream_endpoint:9080;
         # Need the next 4 lines. Else browser might think X-site.
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -527,4 +527,3 @@ EOF
     }
   }
 }
-
