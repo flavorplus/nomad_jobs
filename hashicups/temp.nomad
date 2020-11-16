@@ -242,7 +242,7 @@ EOF
 app.storage=disabled
 
 app.storage=db
-app.encryption.enabled=false
+app.encryption.enabled=true
 app.encryption.path=transform
 app.encryption.key=payments
 EOF
@@ -258,7 +258,7 @@ spring:
       enabled: true
       fail-fast: true
       authentication: token
-      token: REPLACETOKEN
+      token: s.8upVDgQm5rduyRO9uMloBIGM
       host: server-a-1
       port: 8200
       scheme: http
