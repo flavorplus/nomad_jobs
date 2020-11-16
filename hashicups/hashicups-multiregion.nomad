@@ -5,11 +5,11 @@ job "hashicups" {
       max_parallel = 1
       on_failure   = "fail_all"
     }
-    region "west" {
+    region "West" {
       count = 3
       datacenters = ["West"]
     }
-    region "east" {
+    region "East" {
       count = 1
       datacenters = ["East"]
     }
