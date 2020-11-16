@@ -206,7 +206,7 @@ EOF
       mode     = "delay"
     }
 
-  # Define update strategy for API component
+  # Define update strategy for the Payments API
     update {
       canary  = 1
     }
