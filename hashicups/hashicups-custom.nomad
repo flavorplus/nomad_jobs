@@ -244,8 +244,6 @@ EOF
       template {
         destination   = "local/application.properties"
         data = <<EOF
-app.storage=disabled
-
 app.storage=db
 app.encryption.enabled=false
 app.encryption.path=transform
@@ -289,8 +287,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 300
+        memory = 512
       }
 
       scaling "cpu" {
@@ -327,6 +325,11 @@ EOF
       interval = "5m"
       delay    = "25s"
       mode     = "delay"
+    }
+
+    # Define update strategy for the Payments API
+    update {
+      canary  = 1
     }
 
     task "public-api" {
