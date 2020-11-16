@@ -167,7 +167,7 @@ EOF
 
       # Task relevant environment variables necessary
       env {
-        BIND_ADDRESS = ":8080"
+        BIND_ADDRESS = ":9080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
       }
 
@@ -177,7 +177,7 @@ EOF
         dns_servers = ["172.17.0.1"]
 
         port_map {
-          pub_api = 8080
+          pub_api = 9080
         }
       }
 
@@ -188,7 +188,7 @@ EOF
 
         network {
           port "pub_api" {
-            static = 8080
+            static = 9080
           }
         }
       }
@@ -256,7 +256,7 @@ server {
     # Proxy pass the api location to save CORS
     # Use location exposed by Consul connect
     location /api {
-        proxy_pass http://$upstream_endpoint:8080;
+        proxy_pass http://$upstream_endpoint:9080;
         # Need the next 4 lines. Else browser might think X-site.
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;

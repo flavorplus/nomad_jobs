@@ -206,6 +206,11 @@ EOF
       mode     = "delay"
     }
 
+  # Define update strategy for API component
+    update {
+      canary  = 1
+    }
+
     network {
       port  "http_port"  {
         static = 8080
