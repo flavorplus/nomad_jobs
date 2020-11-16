@@ -1,6 +1,6 @@
 job "hashicups" {
   # Defining which data center in which to deploy the service
-  datacenters = ["dc1"]
+  datacenters = ["West"]
 
   # Define Nomad Scheduler to be used (Service/Batch/System)
   type     = "service"
@@ -35,7 +35,7 @@ job "hashicups" {
 
      # Postgres Docker image location and configuration
      config {
-        image = "hashicorpdemoapp/product-api-db:v0.0.11"
+        image = "hashicorpdemoapp/product-api-db:v0.0.12"
         dns_servers = ["172.17.0.1"]
         network_mode = "host"
         port_map {
@@ -65,6 +65,28 @@ job "hashicups" {
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul
       service {
@@ -107,13 +129,13 @@ EOF
       }
 
       # Task relevant environment variables necessary
-      env = {
-        "CONFIG_FILE" = "/secrets/db-creds"
+      env {
+        CONFIG_FILE = "/secrets/db-creds"
       }
 
       # Product-api Docker image location and configuration
       config {
-        image = "hashicorpdemoapp/product-api:v0.0.11"
+        image = "hashicorpdemoapp/product-api:v0.0.12"
         dns_servers = ["172.17.0.1"]
         port_map {
           http_port = 9090
@@ -131,6 +153,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -166,18 +210,18 @@ EOF
       driver = "docker"
 
       # Task relevant environment variables necessary
-      env = {
-        BIND_ADDRESS = ":8080"
+      env {
+        BIND_ADDRESS = ":9080"
         PRODUCT_API_URI = "http://products-api-server.service.consul:9090"
       }
 
       # Public-api Docker image location and configuration
       config {
-        image = "hashicorpdemoapp/public-api:v0.0.1"
+        image = "hashicorpdemoapp/public-api:v0.0.2"
         dns_servers = ["172.17.0.1"]
 
         port_map {
-          pub_api = 8080
+          pub_api = 9080
         }
       }
 
@@ -188,10 +232,32 @@ EOF
 
         network {
           port "pub_api" {
-            static = 8080
+            static = 9080
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -234,7 +300,7 @@ EOF
 
       # Frontend Docker image location and configuration
       config {
-        image = "hashicorpdemoapp/frontend:v0.0.3"
+        image = "hashicorpdemoapp/frontend:v0.0.4"
         dns_servers = ["172.17.0.1"]
         volumes = [
           "local:/etc/nginx/conf.d",
@@ -256,7 +322,7 @@ server {
     # Proxy pass the api location to save CORS
     # Use location exposed by Consul connect
     location /api {
-        proxy_pass http://$upstream_endpoint:8080;
+        proxy_pass http://$upstream_endpoint:9080;
         # Need the next 4 lines. Else browser might think X-site.
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
@@ -283,6 +349,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {

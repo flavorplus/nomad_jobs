@@ -6,11 +6,11 @@ job "postgres-sync-service" {
     }
     region "west" {
       count = 1
-      datacenters = ["dc1"]
+      datacenters = ["West"]
     }
     region "east" {
       count = 1
-      datacenters = ["east-1"]
+      datacenters = ["East"]
     }
   }
   type = "service"

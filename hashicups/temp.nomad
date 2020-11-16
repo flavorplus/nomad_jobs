@@ -206,11 +206,6 @@ EOF
       mode     = "delay"
     }
 
-  # Define update strategy for the Payments API
-    update {
-      canary  = 1
-    }
-
     network {
       port  "http_port"  {
         static = 8080
@@ -244,8 +239,10 @@ EOF
       template {
         destination   = "local/application.properties"
         data = <<EOF
+app.storage=disabled
+
 app.storage=db
-app.encryption.enabled=false
+app.encryption.enabled=true
 app.encryption.path=transform
 app.encryption.key=payments
 EOF
@@ -261,7 +258,7 @@ spring:
       enabled: true
       fail-fast: true
       authentication: token
-      token: REPLACETOKEN
+      token: s.8upVDgQm5rduyRO9uMloBIGM
       host: server-a-1
       port: 8200
       scheme: http
@@ -287,8 +284,8 @@ EOF
 
       # Host machine resources required
       resources {
-        cpu    = 300
-        memory = 512
+        #cpu    = 500
+        #memory = 1024
       }
 
       scaling "cpu" {
@@ -325,11 +322,6 @@ EOF
       interval = "5m"
       delay    = "25s"
       mode     = "delay"
-    }
-
-    # Define update strategy for the Payments API
-    update {
-      canary  = 1
     }
 
     task "public-api" {
