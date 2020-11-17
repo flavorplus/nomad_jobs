@@ -49,7 +49,7 @@ name: current-state
 
 
 * HashiCups is 100% Container Based
-* Public API Function Needs Modification
+* Need Support for Online Payment
 * Management need us to expand across regions
 ]
 .center[![:scale 75%](images/LockedContainer.png)]
@@ -57,7 +57,7 @@ name: current-state
 ???
 Currently we are using an application to sell a lifesaving drug - caffeine.  The application is called 'HashiCups' and we found it on Github somewhere. Unfortunately we didn't find any working cloud access keys, the developers must have been using Vault.
 
-The challenge we are having is that although we saved a ton of money finding this application, it's all container based, and we aren't container specialists.  If we could just use the application as is, that wouldn't be a problem, but we need to modify the Public API functionality for our needs.
+The challenge we are having is that although we saved a ton of money finding this application, it's all container based, and we aren't container specialists.  If we could just use the application as is, that wouldn't be a problem, but we need to add the ability to process payments online.
 
 Also, management has pushed us for world domination, so we'll have to get the application working in another region without having to manage multiple databases and synchronization.  Oh my oh my what is an engineer to do?
 

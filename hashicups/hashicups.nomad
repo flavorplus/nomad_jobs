@@ -57,14 +57,36 @@ job "hashicups" {
 
       # Host machine resources required
       resources {
-        cpu = 100 #1000
-        memory = 300 #1024
+        cpu = 300
+        memory = 512
         network {
           port  "db"  {
             static = 5432
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul
       service {
@@ -122,8 +144,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 100
+        memory = 300
         network {
           #mbits = 10
           port  "http_port"  {
@@ -131,6 +153,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -183,8 +227,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 100
+        memory = 256
 
         network {
           port "pub_api" {
@@ -192,6 +236,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
@@ -276,6 +342,8 @@ EOF
 
       # Host machine resources required
       resources {
+        cpu = 100
+        memory = 256
         network {
           mbits = 10
           port  "http"{
@@ -283,6 +351,28 @@ EOF
           }
         }
       }
+
+      scaling "cpu" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "95pct" {
+            strategy "app-sizing-percentile" {
+              percentile = "95"
+            }
+          }
+        }
+      } # End scaling cpu
+
+      scaling "mem" {
+        policy {
+          cooldown            = "1m"
+          evaluation_interval = "1m"
+          check "max" {
+            strategy "app-sizing-max" {}
+          }
+        }
+      } # End scaling mem
 
       # Service definition to be sent to Consul with corresponding health check
       service {
