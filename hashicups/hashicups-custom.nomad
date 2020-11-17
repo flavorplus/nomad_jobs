@@ -57,8 +57,8 @@ job "hashicups" {
 
       # Host machine resources required
       resources {
-        cpu = 100 #1000
-        memory = 300 #1024
+        cpu = 300
+        memory = 512
         network {
           port  "db"  {
             static = 5432
@@ -144,8 +144,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 100
+        memory = 300
         network {
           #mbits = 10
           port  "http_port"  {
@@ -354,8 +354,8 @@ EOF
 
       # Host machine resources required
       resources {
-        #cpu    = 500
-        #memory = 1024
+        cpu    = 100
+        memory = 256
 
         network {
           port "pub_api" {
@@ -469,6 +469,8 @@ EOF
 
       # Host machine resources required
       resources {
+        cpu = 100
+        memory = 256
         network {
           mbits = 10
           port  "http"{
