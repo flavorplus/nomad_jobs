@@ -4,11 +4,11 @@ job "postgres-sync-service" {
       max_parallel = 1
       on_failure   = "fail_all"
     }
-    region "west" {
+    region "West" {
       count = 1
       datacenters = ["West"]
     }
-    region "east" {
+    region "East" {
       count = 1
       datacenters = ["East"]
     }
@@ -72,7 +72,7 @@ VALUES ('public.ingredients_id_seq', 'primary_2_primary', 1, 10, CURRENT_TIMESTA
         config {
           command = "psql"
           args = [
-          "-U","root","-h","postgres.service.dc1.consul","products","-f","local/setupdb.sql"
+          "-U","root","-h","postgres.service.west.consul","products","-f","local/setupdb.sql"
           ]
       }
     }
@@ -86,7 +86,7 @@ VALUES ('public.ingredients_id_seq', 'primary_2_primary', 1, 10, CURRENT_TIMESTA
 sync.url=http\://symds.service.{{ env "node.datacenter" }}.consul\:31415/sync/products-{{ env "node.datacenter" }}
 group.id=primary
 db.init.sql=
-registration.url=http\://symds.service.dc1.consul\:31415/sync/products-{{ env "node.datacenter" }}
+registration.url=http\://symds.service.west.consul\:31415/sync/products-{{ env "node.datacenter" }}
 db.driver=org.postgresql.Driver
 db.user=root
 db.password=password

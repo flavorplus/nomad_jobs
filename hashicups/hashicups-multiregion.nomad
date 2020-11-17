@@ -157,8 +157,8 @@ EOF
 
       # Host machine resources required
       resources {
-        cpu    = 500
-        memory = 1024
+        cpu    = 300
+        memory = 512
         network {
           #mbits = 10
           port  "http_port"  {
@@ -219,6 +219,11 @@ EOF
       mode     = "delay"
     }
 
+  # Define update strategy for the Payments API
+    update {
+      canary  = 1
+    }
+
     network {
       port  "http_port"  {
         static = 8080
@@ -252,10 +257,8 @@ EOF
       template {
         destination   = "local/application.properties"
         data = <<EOF
-app.storage=disabled
-
 app.storage=db
-app.encryption.enabled=false
+app.encryption.enabled=true
 app.encryption.path=transform
 app.encryption.key=payments
 EOF
@@ -297,8 +300,8 @@ EOF
 
       # Host machine resources required
       resources {
-        cpu    = 500
-        memory = 1024
+        cpu    = 300
+        memory = 512
       }
 
       scaling "cpu" {
@@ -335,6 +338,11 @@ EOF
       interval = "5m"
       delay    = "25s"
       mode     = "delay"
+    }
+
+    # Define update strategy for the Payments API
+    update {
+      canary  = 1
     }
 
     task "public-api" {
@@ -412,7 +420,7 @@ EOF
   # Frontend component providing user access to the application
 
   group "frontend" {
-    count = 3
+    count = 0
 
     restart {
       attempts = 10
