@@ -20,9 +20,9 @@ variable "tfc_agent_token" {
 #
 # output "job" { value = data.template_file.job.rendered }
 
-# resource "nomad_job" "hashicups" {
-#   jobspec = file("${path.module}/hashicups-multiregion.nomad")
-# }
+resource "nomad_job" "hashicups" {
+  jobspec = file("${path.module}/hashicups-multiregion.nomad")
+}
 
 resource "nomad_job" "prometheus" {
   jobspec = file("${path.module}/as-prometheus.nomad")
