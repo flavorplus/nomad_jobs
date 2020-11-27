@@ -70,8 +70,8 @@ job "hashicups" {
 
       # Host machine resources required
       resources {
-        cpu = 100 #1000
-        memory = 300 #1024
+        cpu = 300
+        memory = 512
         network {
           port  "db"  {
             static = 5432
@@ -157,8 +157,8 @@ EOF
 
       # Host machine resources required
       resources {
-        cpu    = 500
-        memory = 1024
+        cpu    = 100
+        memory = 300
         network {
           #mbits = 10
           port  "http_port"  {
@@ -219,6 +219,11 @@ EOF
       mode     = "delay"
     }
 
+  # Define update strategy for the Payments API
+    update {
+      canary  = 1
+    }
+
     network {
       port  "http_port"  {
         static = 8080
@@ -252,10 +257,8 @@ EOF
       template {
         destination   = "local/application.properties"
         data = <<EOF
-app.storage=disabled
-
 app.storage=db
-app.encryption.enabled=false
+app.encryption.enabled=true
 app.encryption.path=transform
 app.encryption.key=payments
 EOF
@@ -297,8 +300,8 @@ EOF
 
       # Host machine resources required
       resources {
-        cpu    = 500
-        memory = 1024
+        cpu    = 300
+        memory = 512
       }
 
       scaling "cpu" {
@@ -337,6 +340,11 @@ EOF
       mode     = "delay"
     }
 
+    # Define update strategy for the Payments API
+    update {
+      canary  = 1
+    }
+
     task "public-api" {
       driver = "docker"
 
@@ -359,8 +367,8 @@ EOF
 
       # Host machine resources required
       resources {
-        cpu    = 500
-        memory = 1024
+        cpu    = 100
+        memory = 256
 
         network {
           port "pub_api" {
@@ -412,7 +420,7 @@ EOF
   # Frontend component providing user access to the application
 
   group "frontend" {
-    count = 3
+    count = 0
 
     restart {
       attempts = 10
@@ -474,6 +482,8 @@ EOF
 
       # Host machine resources required
       resources {
+        cpu = 100
+        memory = 256
         network {
           mbits = 10
           port  "http"{
